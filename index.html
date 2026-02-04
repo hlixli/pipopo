@@ -20,8 +20,10 @@
     padding: 0;
     box-sizing: border-box;
   }
-  html, body {
+  html {
     overflow-x: hidden;
+    scrollbar-width: thin;
+    scrollbar-color: #222 transparent;
   }
   body {
     background: #000;
@@ -29,14 +31,30 @@
     font-family: "Courier New", monospace;
     font-size: 15.4px;
     padding: 22px;
-    padding-top: max(calc(16vh + 22px), env(safe-area-inset-top));
-    padding-bottom: max(22px, env(safe-area-inset-bottom));
+    padding-top: max(calc(16vh + 27px), env(safe-area-inset-top));
+    padding-bottom: max(80px, env(safe-area-inset-bottom));
     padding-left: max(22px, env(safe-area-inset-left));
     padding-right: max(22px, env(safe-area-inset-right));
     min-height: 100vh;
     display: flex;
-    align-items: flex-start;
-    justify-content: center;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+  }
+  
+  /* Кастомный скроллбар */
+  ::-webkit-scrollbar {
+    width: 4px;
+  }
+  ::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  ::-webkit-scrollbar-thumb {
+    background: #222;
+    border-radius: 2px;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: #333;
   }
   table {
     border-collapse: collapse;
@@ -45,7 +63,7 @@
   }
   td {
     padding: 13.2px 8.8px;
-    border-bottom: 1px dashed #333;
+    border-bottom: 0.5px solid #1a1a1a;
     vertical-align: middle;
   }
   .label {
@@ -85,12 +103,22 @@
     user-select: none;
     display: flex;
     align-items: center;
+    flex: 1;
+    min-width: 0;
   }
   .addr-full {
     display: inline;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    max-width: 100%;
   }
   .addr-short {
     display: none;
+    width: 110px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
   }
   .copy-icon {
     opacity: 0.4;
@@ -128,9 +156,9 @@
     opacity: 0.7;
   }
   .addr-box.copied {
-    border-color: rgba(255, 255, 255, 0.5);
-    box-shadow: 0 0 12px rgba(255, 255, 255, 0.15);
-    background: #151515;
+    border-color: rgba(255, 255, 255, 0.3);
+    box-shadow: 0 0 6px rgba(255, 255, 255, 0.08);
+    background: #111;
   }
 
   .explorer-dropdown {
@@ -183,30 +211,57 @@
     content: '├';
   }
   .child-row td {
-    padding-top: 6px;
-    padding-bottom: 6px;
-    border-bottom: 1px dashed #222;
+    padding-top: 8px;
+    padding-bottom: 8px;
+    border-bottom: 0.5px solid #151515;
   }
   .child-row .addr-box {
-    padding: 8px 11px;
+    padding: 11px 13.2px;
     background: #080808;
     border-color: #151515;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .child-row .addr-box:hover {
+    color: #fff;
+    background: #1a1a1a;
+    border-color: #2a2a2a;
   }
   .child-row .addr-text {
-    font-size: 12px;
-    color: #999;
+    font-size: 14.3px;
+    letter-spacing: 1.1px;
+    color: #ddd;
+    flex: 1;
+    min-width: 0;
+    overflow: hidden;
+  }
+  .child-row .addr-full {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    max-width: 100%;
+  }
+  .child-row .addr-short {
+    width: 110px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
   }
   .vault-container {
     position: fixed;
     top: 0;
     left: 0;
     right: 0;
-    height: 16vh;
+    height: calc(16vh + 5px);
     display: flex;
     align-items: center;
     justify-content: center;
     padding: 15px;
     padding-top: max(22px, env(safe-area-inset-top));
+    background: #000;
+    z-index: 100;
+    box-shadow: 0 1px 0 #111;
   }
   .vault-box {
     display: flex;
@@ -288,6 +343,13 @@
       padding: 10px 5px;
     }
   }
+  
+  /* Футер */
+  .footer-space {
+    width: 100%;
+    height: 120px;
+    flex-shrink: 0;
+  }
 </style>
 </head>
 <body>
@@ -310,6 +372,8 @@
 
 <table>
 </table>
+
+<div class="footer-space"></div>
 
 <script>
   // ========================================
@@ -594,5 +658,4 @@
 
 </body>
 </html>
-
 
