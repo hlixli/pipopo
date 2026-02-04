@@ -94,7 +94,7 @@
   }
   .copy-icon {
     opacity: 0.4;
-    transition: all 0.3s ease;
+    transition: all 0.25s ease;
     width: 17.6px;
     height: 17.6px;
     flex-shrink: 0;
@@ -104,11 +104,22 @@
   }
   .addr-box.copied .copy-icon {
     opacity: 0;
-    transform: scale(0.5);
+  }
+  .copied-icon {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 17.6px;
+    height: 17.6px;
+    opacity: 0;
+    transition: all 0.25s ease;
+  }
+  .addr-box.copied .copied-icon {
+    opacity: 0.8;
   }
   .explorer-icon {
     opacity: 0.4;
-    transition: all 0.3s ease;
+    transition: all 0.2s ease;
     width: 17.6px;
     height: 17.6px;
     flex-shrink: 0;
@@ -116,22 +127,10 @@
   .explorer-btn:hover .explorer-icon {
     opacity: 0.7;
   }
-  .status {
-    font-size: 32px;
-    color: #0f0;
-    font-weight: bold;
-    opacity: 0;
-    transition: all 0.3s ease;
-    pointer-events: none;
-    white-space: nowrap;
-  }
-  .addr-box.copied .status {
-    opacity: 1;
-    transform: translate(-50%, -50%) scale(1);
-  }
   .addr-box.copied {
-    border-color: #0f0;
-    box-shadow: 0 0 10px rgba(0, 255, 0, 0.2);
+    border-color: rgba(255, 255, 255, 0.5);
+    box-shadow: 0 0 12px rgba(255, 255, 255, 0.15);
+    background: #151515;
   }
 
   .explorer-dropdown {
@@ -362,7 +361,11 @@
                   <rect x="9" y="9" width="13" height="13" rx="2" ry="2"/>
                   <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>
                 </svg>
-                <span class="status" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%) scale(0.5); margin: 0;">✓</span>
+                <svg class="copied-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M9 5H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2"/>
+                  <rect x="9" y="3" width="6" height="4" rx="1"/>
+                  <path d="M9 14l2 2 4-4"/>
+                </svg>
               </div>
             </div>
           </div>
@@ -399,7 +402,11 @@
                     <rect x="9" y="9" width="13" height="13" rx="2" ry="2"/>
                     <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>
                   </svg>
-                  <span class="status" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%) scale(0.5); margin: 0;">✓</span>
+                  <svg class="copied-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M9 5H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2"/>
+                    <rect x="9" y="3" width="6" height="4" rx="1"/>
+                    <path d="M9 14l2 2 4-4"/>
+                  </svg>
                 </div>
               </div>
             </div>
@@ -451,7 +458,11 @@
                 <rect x="9" y="9" width="13" height="13" rx="2" ry="2"/>
                 <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>
               </svg>
-              <span class="status" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%) scale(0.5); margin: 0;">✓</span>
+              <svg class="copied-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M9 5H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2"/>
+                <rect x="9" y="3" width="6" height="4" rx="1"/>
+                <path d="M9 14l2 2 4-4"/>
+              </svg>
             </div>
           </div>
         </div>
