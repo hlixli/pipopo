@@ -29,7 +29,7 @@
     font-family: "Courier New", monospace;
     font-size: 15.4px;
     padding: 22px;
-    padding-top: max(calc(33vh + 22px), env(safe-area-inset-top));
+    padding-top: max(calc(16vh + 22px), env(safe-area-inset-top));
     padding-bottom: max(22px, env(safe-area-inset-bottom));
     padding-left: max(22px, env(safe-area-inset-left));
     padding-right: max(22px, env(safe-area-inset-right));
@@ -196,6 +196,23 @@
     font-size: 12px;
     color: #999;
   }
+  .quote-container {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    padding: 22px;
+    padding-top: max(22px, env(safe-area-inset-top));
+    text-align: center;
+  }
+  .quote {
+    color: #fff;
+    font-size: 13px;
+    font-style: italic;
+    opacity: 0.6;
+    letter-spacing: 0.5px;
+    margin: 0;
+  }
   @media (max-width: 768px) {
     .addr-full {
       display: none;
@@ -207,7 +224,7 @@
   @media (max-width: 600px) {
     body {
       padding: 12px;
-      padding-top: max(calc(33vh + 12px), env(safe-area-inset-top));
+      padding-top: max(calc(16vh + 12px), env(safe-area-inset-top));
     }
     .label {
       width: 65px;
@@ -225,10 +242,32 @@
 </head>
 <body>
 
+<div class="quote-container">
+  <p class="quote" id="randomQuote"></p>
+</div>
+
 <table>
 </table>
 
 <script>
+  // Цитаты
+  const quotes = [
+    "Emotions are expensive—discipline is cheaper.",
+    "If you feel urgency, you've already lost clarity.",
+    "Revenge trading is just paying tuition in cash.",
+    "Don't make money decisions with an elevated heart rate.",
+    "Impulse is a fee you don't see on the statement.",
+    "Protect capital first; profits come second.",
+    "If you can't explain the move, don't make the move.",
+    "A good plan beats a strong feeling.",
+    "The market punishes speed more than mistakes.",
+    "Boredom and anger are not strategies.",
+    "Pause. Breathe. Then decide.",
+    "Your worst trades start with 'just this once.'"
+  ];
+  
+  document.getElementById('randomQuote').textContent = quotes[Math.floor(Math.random() * quotes.length)];
+
   // ========================================
   // НАСТРОЙКИ: ДОБАВЬ СЮДА СВОИ АДРЕСА
   // (Только сети, поддерживаемые Trezor)
