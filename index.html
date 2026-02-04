@@ -133,38 +133,7 @@
     border-color: #0f0;
     box-shadow: 0 0 10px rgba(0, 255, 0, 0.2);
   }
-  .tooltip {
-    position: absolute;
-    background: #222;
-    color: #fff;
-    padding: 6.6px 11px;
-    border-radius: 4.4px;
-    font-size: 12.1px;
-    bottom: calc(100% + 8.8px);
-    left: 50%;
-    transform: translateX(-50%);
-    white-space: nowrap;
-    opacity: 0;
-    pointer-events: none;
-    transition: opacity 0.2s;
-    border: 1px solid #444;
-    z-index: 10;
-  }
-  .tooltip::after {
-    content: '';
-    position: absolute;
-    top: 100%;
-    left: 50%;
-    transform: translateX(-50%);
-    border: 4px solid transparent;
-    border-top-color: #222;
-  }
-  .addr-box:hover .tooltip {
-    opacity: 1;
-  }
-  .addr-box.copied .tooltip {
-    opacity: 0 !important;
-  }
+
   .explorer-dropdown {
     position: absolute;
     bottom: calc(100% + 5px);
@@ -396,7 +365,6 @@
                 <span class="status" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%) scale(0.5); margin: 0;">✓</span>
               </div>
             </div>
-            <div class="tooltip">${wallet.address}</div>
           </div>
         </td>
       `;
@@ -434,7 +402,6 @@
                   <span class="status" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%) scale(0.5); margin: 0;">✓</span>
                 </div>
               </div>
-              <div class="tooltip">${chain.label}: ${wallet.address}</div>
             </div>
           </td>
         `;
@@ -487,7 +454,6 @@
               <span class="status" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%) scale(0.5); margin: 0;">✓</span>
             </div>
           </div>
-          <div class="tooltip">${isEnabled ? wallet.address : 'Адрес не добавлен'}</div>
         </div>
       </td>
     `;
