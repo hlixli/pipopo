@@ -1,0 +1,553 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>ADDR_LIST</title>
+
+<!-- PWA / iOS Full Screen -->
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="ADDR_LIST">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="theme-color" content="#000000">
+<link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect fill='%23000' width='100' height='100'/><text x='50' y='60' font-size='40' text-anchor='middle' fill='%23fff'>₿</text></svg>">
+
+<style>
+  * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
+  body {
+    background: #000;
+    color: #aaa;
+    font-family: "Courier New", monospace;
+    font-size: 15.4px;
+    padding: 22px;
+    padding-top: max(22px, env(safe-area-inset-top));
+    padding-bottom: max(22px, env(safe-area-inset-bottom));
+    padding-left: max(22px, env(safe-area-inset-left));
+    padding-right: max(22px, env(safe-area-inset-right));
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  table {
+    border-collapse: collapse;
+    width: 100%;
+    max-width: 770px;
+  }
+  td {
+    padding: 13.2px 8.8px;
+    border-bottom: 1px dashed #333;
+    vertical-align: middle;
+  }
+  .label {
+    width: 110px;
+    color: #666;
+    font-weight: bold;
+    font-size: 13.2px;
+    text-transform: uppercase;
+  }
+  .addr-box {
+    position: relative;
+    color: #ddd;
+    transition: all 0.2s ease;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 11px 13.2px;
+    border-radius: 4.4px;
+    background: #0a0a0a;
+    border: 1px solid #1a1a1a;
+    cursor: pointer;
+  }
+  .addr-box:hover {
+    color: #fff;
+    background: #1a1a1a;
+    border-color: #2a2a2a;
+    transform: translateX(2px);
+  }
+  .addr-box:active {
+    transform: scale(0.98);
+  }
+  .addr-text {
+    letter-spacing: 1.1px;
+    font-size: 14.3px;
+    user-select: none;
+    display: flex;
+    align-items: center;
+  }
+  .addr-full {
+    display: inline;
+  }
+  .addr-short {
+    display: none;
+  }
+  .copy-icon {
+    opacity: 0.4;
+    transition: all 0.3s ease;
+    width: 17.6px;
+    height: 17.6px;
+    flex-shrink: 0;
+  }
+  .copy-btn:hover .copy-icon {
+    opacity: 0.7;
+  }
+  .addr-box.copied .copy-icon {
+    opacity: 0;
+    transform: scale(0.5);
+  }
+  .explorer-icon {
+    opacity: 0.4;
+    transition: all 0.3s ease;
+    width: 17.6px;
+    height: 17.6px;
+    flex-shrink: 0;
+  }
+  .explorer-btn:hover .explorer-icon {
+    opacity: 0.7;
+  }
+  .status {
+    font-size: 22px;
+    color: #0f0;
+    font-weight: bold;
+    opacity: 0;
+    transition: all 0.3s ease;
+    pointer-events: none;
+    white-space: nowrap;
+  }
+  .addr-box.copied .status {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1);
+  }
+  .addr-box.copied {
+    border-color: #0f0;
+    box-shadow: 0 0 10px rgba(0, 255, 0, 0.2);
+  }
+  .tooltip {
+    position: absolute;
+    background: #222;
+    color: #fff;
+    padding: 6.6px 11px;
+    border-radius: 4.4px;
+    font-size: 12.1px;
+    bottom: calc(100% + 8.8px);
+    left: 50%;
+    transform: translateX(-50%);
+    white-space: nowrap;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.2s;
+    border: 1px solid #444;
+    z-index: 10;
+  }
+  .tooltip::after {
+    content: '';
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    border: 4px solid transparent;
+    border-top-color: #222;
+  }
+  .addr-box:hover .tooltip {
+    opacity: 1;
+  }
+  .explorer-dropdown {
+    position: absolute;
+    bottom: calc(100% + 5px);
+    right: 0;
+    background: #1a1a1a;
+    border: 1px solid #333;
+    border-radius: 4px;
+    padding: 4px 0;
+    display: none;
+    z-index: 20;
+    min-width: 80px;
+  }
+  .explorer-dropdown.show {
+    display: block;
+  }
+  .explorer-dropdown a {
+    display: block;
+    padding: 6px 12px;
+    color: #aaa;
+    text-decoration: none;
+    font-size: 12px;
+    transition: all 0.2s;
+  }
+  .explorer-dropdown a:hover {
+    background: #2a2a2a;
+    color: #fff;
+  }
+  /* Дерево для групп */
+  .group-parent .label {
+    color: #888;
+  }
+  .group-parent .addr-box {
+    border-color: #252525;
+  }
+  .child-row .label {
+    padding-left: 25px;
+    position: relative;
+    color: #555;
+    font-size: 12px;
+  }
+  .child-row .label::before {
+    content: '└';
+    position: absolute;
+    left: 8px;
+    color: #333;
+  }
+  .child-row .label.not-last::before {
+    content: '├';
+  }
+  .child-row td {
+    padding-top: 6px;
+    padding-bottom: 6px;
+    border-bottom: 1px dashed #222;
+  }
+  .child-row .addr-box {
+    padding: 8px 11px;
+    background: #080808;
+    border-color: #151515;
+  }
+  .child-row .addr-text {
+    font-size: 12px;
+    color: #999;
+  }
+  @media (max-width: 768px) {
+    .addr-full {
+      display: none;
+    }
+    .addr-short {
+      display: inline;
+    }
+  }
+  @media (max-width: 600px) {
+    body {
+      padding: 15px;
+    }
+    .label {
+      width: 70px;
+      font-size: 11px;
+    }
+    .addr-text {
+      font-size: 11px;
+    }
+    td {
+      padding: 10px 5px;
+    }
+  }
+</style>
+</head>
+<body>
+
+<table>
+</table>
+
+<script>
+  // ========================================
+  // НАСТРОЙКИ: ДОБАВЬ СЮДА СВОИ АДРЕСА
+  // (Только сети, поддерживаемые Trezor)
+  // ========================================
+  const wallets = [
+    {
+      label: 'BTC',
+      address: 'bc1q2yjh3fr6gs7ejp7gp50auz6zsj5c4rh2uu6mmw',
+      explorer: 'https://blockchair.com/bitcoin/address/'
+    },
+    {
+      label: 'EVM',
+      address: '0x0cd88d1ea42148A9740209B7eDa846389861C11D',
+      isGroup: true,
+      chains: [
+        { label: 'ETH', explorer: 'https://etherscan.io/address/' },
+        { label: 'POL', explorer: 'https://polygonscan.com/address/' },
+        { label: 'BNB', explorer: 'https://bscscan.com/address/' },
+        { label: 'ARB', explorer: 'https://arbiscan.io/address/' }
+      ]
+    },
+    {
+      label: 'SOL',
+      address: '5863rTRJADzgcUoMzVuAD1T2XxvXsBMip1VRXLeLsvpp',
+      explorer: 'https://solscan.io/account/'
+    },
+    {
+      label: 'XRP',
+      address: '',
+      explorer: 'https://xrpscan.com/account/'
+    },
+    {
+      label: 'ADA',
+      address: 'addr1qyxzu4ycmee4ltn5hzpfnw06npstrz9806dldqxml4t6em6c084rukjvcqmq70vq53uye03mdhk57y949eqgvw6z7fnspc3rln',
+      explorer: 'https://cardanoscan.io/address/'
+    },
+    {
+      label: 'LTC',
+      address: 'ltc1q0zmmk3lexm8k9pexj3m58nc28qcldurkujshmr',
+      explorer: 'https://blockchair.com/litecoin/address/'
+    },
+    {
+      label: 'BCH',
+      address: '',
+      explorer: 'https://blockchair.com/bitcoin-cash/address/'
+    },
+    {
+      label: 'DOGE',
+      address: '',
+      explorer: 'https://blockchair.com/dogecoin/address/'
+    },
+    {
+      label: 'DASH',
+      address: '',
+      explorer: 'https://blockchair.com/dash/address/'
+    },
+    {
+      label: 'XMR',
+      address: '',
+      explorer: 'https://moneroblocks.info/search/'
+    },
+    {
+      label: 'ETC',
+      address: '',
+      explorer: 'https://blockscout.com/etc/mainnet/address/'
+    },
+    {
+      label: 'ZEC',
+      address: '',
+      explorer: 'https://blockchair.com/zcash/address/'
+    },
+    {
+      label: 'MATIC',
+      address: '',
+      explorer: 'https://polygonscan.com/address/'
+    },
+    {
+      label: 'AVAX',
+      address: '',
+      explorer: 'https://snowtrace.io/address/'
+    },
+    {
+      label: 'OP',
+      address: '',
+      explorer: 'https://optimistic.etherscan.io/address/'
+    },
+    {
+      label: 'EOS',
+      address: '',
+      explorer: 'https://bloks.io/account/'
+    },
+    {
+      label: 'XTZ',
+      address: '',
+      explorer: 'https://tzstats.com/'
+    }
+  ];
+  // ========================================
+
+  // Функция для сокращения адреса
+  function shortenAddress(addr) {
+    if (!addr) return '—';
+    if (addr.length < 12) return addr;
+    return addr.substring(0, 6) + '...' + addr.substring(addr.length - 4);
+  }
+
+  // Генерация таблицы
+  const tableBody = document.querySelector('table');
+  tableBody.innerHTML = '';
+  
+  wallets.forEach(wallet => {
+    const isEnabled = wallet.address !== '';
+    
+    // Если это группа (дерево)
+    if (wallet.isGroup && wallet.chains) {
+      // Родительская строка с адресом
+      const parentRow = document.createElement('tr');
+      parentRow.className = 'group-parent';
+      
+      parentRow.innerHTML = `
+        <td class="label">${wallet.label}</td>
+        <td>
+          <div class="addr-box" data-full="${wallet.address}">
+            <span class="addr-text">
+              <span class="addr-full">${wallet.address}</span>
+              <span class="addr-short">${shortenAddress(wallet.address)}</span>
+            </span>
+            <div style="display: flex; gap: 8.8px; margin-left: 11px;">
+              <div class="copy-btn" style="position: relative; width: 17.6px; height: 17.6px; flex-shrink: 0; cursor: pointer;">
+                <svg class="copy-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="position: absolute; top: 0; left: 0; margin: 0;">
+                  <rect x="9" y="9" width="13" height="13" rx="2" ry="2"/>
+                  <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>
+                </svg>
+                <span class="status" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%) scale(0.5); margin: 0;">✓</span>
+              </div>
+            </div>
+            <div class="tooltip">${wallet.address}</div>
+          </div>
+        </td>
+      `;
+      tableBody.appendChild(parentRow);
+      
+      // Дочерние строки для каждого блокчейна
+      wallet.chains.forEach((chain, index) => {
+        const childRow = document.createElement('tr');
+        childRow.className = 'child-row';
+        
+        // Меняем символ для последнего элемента
+        const isLast = index === wallet.chains.length - 1;
+        
+        childRow.innerHTML = `
+          <td class="label" ${isLast ? '' : 'style="--tree-char: ├"'}>${chain.label}</td>
+          <td>
+            <div class="addr-box child-addr" data-full="${wallet.address}" data-explorer="${chain.explorer}">
+              <span class="addr-text">
+                <span class="addr-full">${wallet.address}</span>
+                <span class="addr-short">${shortenAddress(wallet.address)}</span>
+              </span>
+              <div style="display: flex; gap: 8.8px; margin-left: 11px;">
+                <div class="explorer-btn" style="position: relative; width: 17.6px; height: 17.6px; flex-shrink: 0; cursor: pointer;">
+                  <svg class="explorer-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/>
+                    <polyline points="15 3 21 3 21 9"/>
+                    <line x1="10" y1="14" x2="21" y2="3"/>
+                  </svg>
+                </div>
+                <div class="copy-btn" style="position: relative; width: 17.6px; height: 17.6px; flex-shrink: 0; cursor: pointer;">
+                  <svg class="copy-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="position: absolute; top: 0; left: 0; margin: 0;">
+                    <rect x="9" y="9" width="13" height="13" rx="2" ry="2"/>
+                    <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>
+                  </svg>
+                  <span class="status" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%) scale(0.5); margin: 0;">✓</span>
+                </div>
+              </div>
+              <div class="tooltip">${chain.label}: ${wallet.address}</div>
+            </div>
+          </td>
+        `;
+        
+        // Меняем символ дерева для не-последних элементов
+        if (!isLast) {
+          childRow.querySelector('.label').style.setProperty('--tree-before', '├');
+          childRow.querySelector('.label').classList.add('not-last');
+        }
+        
+        tableBody.appendChild(childRow);
+      });
+      
+      return;
+    }
+    
+    // Обычная строка
+    const row = document.createElement('tr');
+    
+    let explorerButtons = '';
+    if (isEnabled) {
+      explorerButtons = `
+        <div class="explorer-btn" style="position: relative; width: 17.6px; height: 17.6px; flex-shrink: 0; cursor: pointer;">
+          <svg class="explorer-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/>
+            <polyline points="15 3 21 3 21 9"/>
+            <line x1="10" y1="14" x2="21" y2="3"/>
+          </svg>
+        </div>
+      `;
+    }
+    
+    row.innerHTML = `
+      <td class="label">${wallet.label}</td>
+      <td>
+        <div class="addr-box" data-full="${wallet.address}" data-explorer="${wallet.explorer}">
+          <span class="addr-text" ${!isEnabled ? 'style="opacity: 0.4;"' : ''}>
+            ${isEnabled ? `
+              <span class="addr-full">${wallet.address}</span>
+              <span class="addr-short">${shortenAddress(wallet.address)}</span>
+            ` : '—'}
+          </span>
+          <div style="display: flex; gap: 8.8px; margin-left: 11px;">
+            ${explorerButtons}
+            <div class="copy-btn" style="position: relative; width: 17.6px; height: 17.6px; flex-shrink: 0; ${!isEnabled ? 'opacity: 0.3; pointer-events: none;' : 'cursor: pointer;'}">
+              <svg class="copy-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="position: absolute; top: 0; left: 0; margin: 0;">
+                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"/>
+                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>
+              </svg>
+              <span class="status" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%) scale(0.5); margin: 0;">✓</span>
+            </div>
+          </div>
+          <div class="tooltip">${isEnabled ? wallet.address : 'Адрес не добавлен'}</div>
+        </div>
+      </td>
+    `;
+    
+    tableBody.appendChild(row);
+  });
+
+  // Функция копирования адреса
+  async function copyAddress(addrBox) {
+    const fullAddr = addrBox.getAttribute('data-full');
+    
+    if (!fullAddr) return;
+    
+    try {
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        await navigator.clipboard.writeText(fullAddr);
+      } else {
+        const el = document.createElement('textarea');
+        el.value = fullAddr;
+        el.style.position = 'absolute';
+        el.style.left = '-9999px';
+        document.body.appendChild(el);
+        el.select();
+        document.execCommand('copy');
+        document.body.removeChild(el);
+      }
+
+      addrBox.classList.add('copied');
+      setTimeout(() => {
+        addrBox.classList.remove('copied');
+      }, 1500);
+    } catch (err) {
+      console.error('Ошибка копирования:', err);
+    }
+  }
+
+  // Обработка клика по всему блоку адреса
+  document.querySelectorAll('.addr-box').forEach(box => {
+    box.addEventListener('click', async function(e) {
+      // Не копируем, если клик был по кнопке эксплорера
+      if (e.target.closest('.explorer-btn')) return;
+      
+      await copyAddress(this);
+    });
+  });
+
+  // Обработка кнопки копирования (оставляем для совместимости)
+  document.querySelectorAll('.copy-btn').forEach(btn => {
+    btn.addEventListener('click', async function(e) {
+      e.stopPropagation();
+      const addrBox = this.closest('.addr-box');
+      await copyAddress(addrBox);
+    });
+  });
+
+  // Обработка кнопки эксплорера
+  document.querySelectorAll('.explorer-btn').forEach(btn => {
+    btn.addEventListener('click', function(e) {
+      e.stopPropagation();
+      
+      const addrBox = this.closest('.addr-box');
+      const fullAddr = addrBox.getAttribute('data-full');
+      const explorerUrl = addrBox.getAttribute('data-explorer');
+      
+      if (!fullAddr || !explorerUrl) return;
+      
+      window.open(explorerUrl + fullAddr, '_blank');
+    });
+  });
+</script>
+
+</body>
+</html>
