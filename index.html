@@ -297,6 +297,7 @@
     align-items: center;
     gap: 6px;
     opacity: 0.4;
+    margin-bottom: 8px;
   }
   .lock-icon {
     width: 14px;
@@ -350,12 +351,38 @@
     height: 120px;
     flex-shrink: 0;
   }
+
+  /* Логотип */
+  .site-logo {
+    width: 60px;
+    height: 60px;
+    margin-bottom: 2px;
+    border-radius: 12px;
+    user-select: none;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    pointer-events: none;
+    -webkit-user-drag: none;
+    -khtml-user-drag: none;
+    -moz-user-drag: none;
+    -o-user-drag: none;
+  }
+  @media (max-width: 480px) {
+    .site-logo {
+      width: 50px;
+      height: 50px;
+      margin-bottom: 1px;
+      border-radius: 10px;
+    }
+  }
 </style>
 </head>
 <body>
 
 <div class="vault-container">
   <div class="vault-box">
+    <img src="Logo1-31.png" alt="" class="site-logo" draggable="false" oncontextmenu="return false;">
     <div class="vault-balance">
       <span class="currency">$</span>
       <span class="amount blur">XX.XXX.XXX</span>
@@ -658,4 +685,3 @@
 
 </body>
 </html>
-
